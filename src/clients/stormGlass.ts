@@ -19,13 +19,26 @@ export interface StormGlassForecastResponse {
   hours: StormGlassPoint[];
 }
 
+export interface ForecastPoint {
+  time: string;
+  waveHeight: number;
+  waveDirection: number;
+  swellDirection:number
+  swellHeight: number;
+  swellPeriod: number;
+  windDirection: number;
+  windSpeed: number;
+
+}
+
 export class StormGlass {
   readonly stormGlassAPIParams = 'swellDirection,swellHeight,swellPeriod,waveDirection,waveHeight,windDirection,windSpeed';
   readonly stormGlassAPISource = 'noaa';
   constructor(protected request: AxiosStatic) {}  
   public async fetchPoints(lat: number, lng: number): Promise<{}> {
-    return this.request.get(
+    return this.request.get<StormGlassForecastResponse>(
       `https://api.stormglass.io/v2/weather/point?params=${this.stormGlassAPIParams}&source=${this.stormGlassAPISource}&end=1592113802&lat=${lat}&lng=${lng}`
       );    
   }
+  
 }
