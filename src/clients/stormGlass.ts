@@ -34,8 +34,9 @@ export interface ForecastPoint {
 export class StormGlass {
   readonly stormGlassAPIParams = 'swellDirection,swellHeight,swellPeriod,waveDirection,waveHeight,windDirection,windSpeed';
   readonly stormGlassAPISource = 'noaa';
-  constructor(protected request: AxiosStatic) {}  
-  public async fetchPoints(lat: number, lng: number): Promise<{}> {
+  constructor(protected request: AxiosStatic) {}
+
+  public async fetchPoints(lat: number, lng: number): Promise<ForecastPoint[]> {
     const response = await this.request.get<StormGlassForecastResponse>(
       `https://api.stormglass.io/v2/weather/point?params=${this.stormGlassAPIParams}&source=${this.stormGlassAPISource}&end=1592113802&lat=${lat}&lng=${lng}`
       );
@@ -53,7 +54,6 @@ export class StormGlass {
       windDirection: point.windDirection[this.stormGlassAPISource],
       windSpeed: point.windSpeed[this.stormGlassAPISource]
     }));
-
   }
 
   private isValidPoint(point: Partial<StormGlassPoint>) :boolean {
