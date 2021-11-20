@@ -36,9 +36,22 @@ export class StormGlass {
   readonly stormGlassAPISource = 'noaa';
   constructor(protected request: AxiosStatic) {}  
   public async fetchPoints(lat: number, lng: number): Promise<{}> {
-    return this.request.get<StormGlassForecastResponse>(
+    const response = this.request.get<StormGlassForecastResponse>(
       `https://api.stormglass.io/v2/weather/point?params=${this.stormGlassAPIParams}&source=${this.stormGlassAPISource}&end=1592113802&lat=${lat}&lng=${lng}`
       );    
   }
   
+
+  private isValidPoint(point: Partial<StormGlassPoint>) :boolean {
+    return !! (
+      point.time &&
+      point.swellDirection?.[this.stormGlassAPISource] &&
+      point.swellHeight?.[this.stormGlassAPISource] &&
+      point.swellPeriod?.[this.stormGlassAPISource] &&
+      point.waveDirection?.[this.stormGlassAPISource] &&
+      point.waveHeight?.[this.stormGlassAPISource] &&
+      point.windDirection?.[this.stormGlassAPISource] &&
+      point.windSpeed?.[this.stormGlassAPISource]
+    );
+  }
 }
