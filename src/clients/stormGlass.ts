@@ -1,3 +1,4 @@
+import { InternalError } from '@src/util/errors/internal-error';
 import { AxiosStatic } from 'axios';
 
 export interface StormGlassPointSource {
@@ -30,6 +31,13 @@ export interface ForecastPoint {
   windSpeed: number;
 }
 
+export class ClientRequestError extends InternalError {
+  constructor(message: string) {
+    const internalMessage = 'Unexpected error when trying to communicate to StormGlass';
+    super(`${internalMessage}: ${message}`);
+  }
+}
+
 export class StormGlass {
   readonly stormGlassAPIParams = 'swellDirection,swellHeight,swellPeriod,waveDirection,waveHeight,windDirection,windSpeed';
   readonly stormGlassAPISource = 'noaa';
@@ -46,7 +54,7 @@ export class StormGlass {
         });
       return this.normalizeResponse(response.data);
     } catch (error) {      
-        throw new Error(`Unexpected error when trying to communicate to StormGlass: ${error.message}`);
+        throw new ClientRequestError(error.message);
     }
   }
 
