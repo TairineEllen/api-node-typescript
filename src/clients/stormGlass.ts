@@ -28,7 +28,6 @@ export interface ForecastPoint {
   swellPeriod: number;
   windDirection: number;
   windSpeed: number;
-
 }
 
 export class StormGlass {
