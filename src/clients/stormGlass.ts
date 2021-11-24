@@ -8,7 +8,7 @@ export interface StormGlassPoint {
   readonly time: string;
   readonly waveHeight: StormGlassPointSource;
   readonly waveDirection: StormGlassPointSource;
-  readonly swellDirection:StormGlassPointSource
+  readonly swellDirection: StormGlassPointSource
   readonly swellHeight: StormGlassPointSource;
   readonly swellPeriod: StormGlassPointSource;
   readonly windDirection: StormGlassPointSource;
@@ -23,7 +23,7 @@ export interface ForecastPoint {
   time: string;
   waveHeight: number;
   waveDirection: number;
-  swellDirection:number
+  swellDirection: number
   swellHeight: number;
   swellPeriod: number;
   windDirection: number;
@@ -34,15 +34,19 @@ export interface ForecastPoint {
 export class StormGlass {
   readonly stormGlassAPIParams = 'swellDirection,swellHeight,swellPeriod,waveDirection,waveHeight,windDirection,windSpeed';
   readonly stormGlassAPISource = 'noaa';
-  constructor(protected request: AxiosStatic) {}
+  constructor(protected request: AxiosStatic) { }
 
   public async fetchPoints(lat: number, lng: number): Promise<ForecastPoint[]> {
     const response = await this.request.get<StormGlassForecastResponse>(
-      `https://api.stormglass.io/v2/weather/point?params=${this.stormGlassAPIParams}&source=${this.stormGlassAPISource}&end=1592113802&lat=${lat}&lng=${lng}`
-      );
-      return this.normalizeResponse(response.data);
+      `https://api.stormglass.io/v2/weather/point?params=${this.stormGlassAPIParams}&source=${this.stormGlassAPISource}&end=1592113802&lat=${lat}&lng=${lng}`,
+      {
+        headers: {
+          Authorization: 'fake-token'
+        }
+      });
+    return this.normalizeResponse(response.data);
   }
-  
+
   private normalizeResponse(points: StormGlassForecastResponse): ForecastPoint[] {
     return points.hours.filter(this.isValidPoint.bind(this)).map(point => ({
       time: point.time,
@@ -56,8 +60,8 @@ export class StormGlass {
     }));
   }
 
-  private isValidPoint(point: Partial<StormGlassPoint>) :boolean {
-    return !! (
+  private isValidPoint(point: Partial<StormGlassPoint>): boolean {
+    return !!(
       point.time &&
       point.swellDirection?.[this.stormGlassAPISource] &&
       point.swellHeight?.[this.stormGlassAPISource] &&
