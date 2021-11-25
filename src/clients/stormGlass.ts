@@ -60,8 +60,11 @@ export class StormGlass {
           }
         });
       return this.normalizeResponse(response.data);
-    } catch (error) {      
-        throw new ClientRequestError(error.message);
+    } catch (error) {
+      if (error.response && error.response.status) {
+        throw new StormGlassResponseError(`Error: ${JSON.stringify(error.response.data)} Code: ${error.response.status}`);
+      }
+      throw new ClientRequestError(error.message);
     }
   }
 
